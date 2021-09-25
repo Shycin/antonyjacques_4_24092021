@@ -53,7 +53,7 @@ function validate()
   if(!check_mail(mail.value))
     error++;
 
-  if(!check_number(quantity_tournament))
+  if(!check_number(quantity_tournament.value))
     error++;
 
   if(!check_min_checkbox(localisation))
@@ -61,7 +61,7 @@ function validate()
 
   if(!check_checkbox(cgu))
     error++;
-  console.log(error);
+
   // Si aucune erreur n'est trouvé le formulaire est envoyé
   if( error == 0)
     return true;
@@ -92,9 +92,9 @@ function check_mail(mail)
 // function detect number superior or egal to 0
 function check_number(number)
 {
-  var regex = /^[1-9][0-9]+$/;
+  var regex = /^[1-9][0-9]*$/;
 
-  if( regex.test(number) )
+  if( regex.test(number) || number == 0 )
     return true;
 
   return false;
