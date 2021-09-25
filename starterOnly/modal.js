@@ -12,6 +12,7 @@ const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 const modalClose = document.querySelectorAll(".close"); //query pour séléctionner le x pour fermer le modal
+const modalbg_confirm = document.querySelector(".bground_confirm"); //query pour séléctionner la modal pour confirmer que l'inscription à été prise en compte
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -21,13 +22,29 @@ function launchModal() {
   modalbg.style.display = "block";
 }
 
+// launch modal confirm
+function launchModalConfirm() {
+  modalbg_confirm.style.display = "block";
+}
+
 
 // close modal event
 modalClose.forEach((btn) => btn.addEventListener("click", closeModal));
 
 // close modal form
-function closeModal() {
-  modalbg.style.display = "none";
+function closeModal(modal = "") {
+
+  // if parameter have parent element is element in DOM
+  if(modal.parentElement)
+  {
+    modal.style.display = "none";
+  }
+  else
+  {
+    this.parentElement.parentElement.style.display = "none";
+  }
+  
+  
 }
 
 
@@ -44,8 +61,7 @@ const errorMessages = {
 	lastName: "Veuillez entrer 2 caractères ou plus pour le champ du nom.",
 	firstName: "Veuillez entrer 2 caractères ou plus pour le champ du prénom.",
 	mail: "Veuillez entrer une adresse email valide.",
-	birthdate:
-		"Veuillez entrer une date de naissance respectant le format JJ/MM/AAAA.",
+	birthdate: "Veuillez entrer une date de naissance valide et au format JJ/MM/AAAA.",
 	quantity: "Veuillez entrer un nombre valide.",
 	location: "Veuillez choisir une ville.",
 	cgu: "Veuillez accepter les conditions d'utilisations.",
@@ -54,76 +70,62 @@ const errorMessages = {
 // function call when form is submit 
 function validate()
 {
+  this.event.preventDefault();
+
   var error = 0;
+
+  hide_errors();
 
   if(!check_name(firstname.value)){
     error++;
-    show_error(firstname.parentElement, true, errorMessages.firstName);
+    show_error(firstname.parentElement, errorMessages.firstName);
   }
-  else
-  {
-    show_error(firstname.parentElement, false);
-  }
+
     
   if(!check_name(lastname.value)){
     error++;
-    show_error(lastname.parentElement, true, errorMessages.lastName);
+    show_error(lastname.parentElement, errorMessages.lastName);
   }
-  else
-  {
-    show_error(lastname.parentElement, false);
-  }
+
     
   if(!check_mail(mail.value)){
     error++;
-    show_error(mail.parentElement, true, errorMessages.mail);
-  }
-  else
-  {
-    show_error(mail.parentElement, false);
+    show_error(mail.parentElement, errorMessages.mail);
   }
 
 
   if(!check_birthdate(birthdate.value)){
     error++;
-    show_error(birthdate.parentElement, true, errorMessages.birthdate);
-  }
-  else
-  {
-    show_error(birthdate.parentElement, false);
+    show_error(birthdate.parentElement, errorMessages.birthdate);
   }
     
 
   if(!check_number(quantity_tournament.value)){
     error++;
-    show_error(quantity_tournament.parentElement, true, errorMessages.quantity);
+    show_error(quantity_tournament.parentElement, errorMessages.quantity);
   }
-  else
-  {
-    show_error(quantity_tournament.parentElement, false);
-  }
+
 
   if(!check_min_checkbox(localisation)){
     error++;
-    show_error(localisation[0].parentElement, true, errorMessages.location);
+    show_error(localisation[0].parentElement, errorMessages.location);
   }
-  else
-  {
-    show_error(localisation[0].parentElement, false);
-  }
+
 
   if(!check_checkbox(cgu)){
     error++;
-    show_error(cgu.parentElement, true, errorMessages.cgu);
-  }
-  else
-  {
-    show_error(cgu.parentElement, false);
+    show_error(cgu.parentElement, errorMessages.cgu);
   }
 
   // Si aucune erreur n'est trouvé le formulaire est envoyé
   if( error == 0)
+  {
+    closeModal(modalbg);
+    launchModalConfirm(); 
+
     return true;
+  }
+
 
   return false;
 }
@@ -151,6 +153,8 @@ function check_mail(mail)
 // function detect if mail have good regex pattern and cancel wrong mail
 function check_birthdate(birthdate)
 {
+  var now = new Date().getTime();
+
   birthdate = birthdate.replaceAll("/","-");
 
   var date_EN = new Date(birthdate);
@@ -160,14 +164,14 @@ function check_birthdate(birthdate)
 
   if (Object.prototype.toString.call(date_EN) === "[object Date]") {
     // it is a date
-    if ( !isNaN(date_EN.getTime())) {  // d.valueOf() could also work
+    if ( !isNaN(date_EN.getTime()) && now > date_EN.getTime()) {  // d.valueOf() could also work
       return true;
     } 
   }
-  
+
   if (Object.prototype.toString.call(date_FR) === "[object Date]") {
     // it is a date
-    if ( !isNaN(date_FR.getTime())) {  // d.valueOf() could also work
+    if ( !isNaN(date_FR.getTime()) && now > date_FR.getTime()) {  // d.valueOf() could also work
       return true;
     } 
   }
@@ -206,16 +210,19 @@ function check_checkbox(checkbox)
   return false;
 }
 
+// function hide error below input
+function hide_errors()
+{
+  var elementParent = document.querySelectorAll(".formData");
+  elementParent.forEach((formdata) => formdata.setAttribute("data-error-visible", false) );
+}
+
 // function display/hide error below input
-function show_error(parentElement, show_error, message_error = "")
+function show_error(parentElement, message_error = "")
 {
   if(show_error)
   {
     parentElement.setAttribute("data-error-visible", true);
     parentElement.setAttribute("data-error", message_error);
-  }
-  else
-  {
-    parentElement.setAttribute("data-error-visible", false);
   }
 }
