@@ -188,6 +188,15 @@ main {
   margin: 15px auto;
 }
 
+.bground_confirm .modal-body
+{
+  height: 700px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
 label {
   font-family: var(--font-default);
   font-size: 17px;
@@ -478,6 +487,13 @@ footer {
   padding-right: 2vw;
   margin: 0 20px;
 }
+@media screen and (max-width: 950px) {
+  .hero-headline {
+    font-size: 4rem;
+  }
+}
+
+
 @media screen and (max-width: 800px) {
   .hero-section {
     display: block;
