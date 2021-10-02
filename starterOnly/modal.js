@@ -27,6 +27,14 @@ function launchModalConfirm() {
   modalbg_confirm.style.display = "block";
 }
 
+// function to reset form
+function resetFormModal(){
+  const formField = modalbg.querySelectorAll("input");
+
+  formField.forEach((field) => field.value = null);
+  formField.forEach((field) => field.checked = false);
+}
+
 
 // close modal event
 modalClose.forEach((btn) => btn.addEventListener("click", closeModal));
@@ -121,7 +129,8 @@ function validate()
   if( error == 0)
   {
     closeModal(modalbg);
-    launchModalConfirm(); 
+    launchModalConfirm();
+    resetFormModal();
 
     return true;
   }
