@@ -38,6 +38,13 @@ p {
 }
 
 
+.hidden
+{
+  display: none;
+}
+
+
+
 .header-logo {
     float: left;
 }
@@ -166,7 +173,6 @@ main {
 }
 
 .bground, .bground_confirm {
-  display: none;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -236,6 +242,7 @@ input {
   line-height: 0.3;
   opacity: 0;
   transition: 0.3s;
+  line-height: 1.5;
 }
 .formData[data-error-visible="true"]::after {
   opacity: 1;
