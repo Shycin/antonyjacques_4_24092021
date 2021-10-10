@@ -72,9 +72,8 @@ const errorMessages = {
 	birthdate: "Veuillez entrer une date de naissance valide et au format JJ/MM/AAAA.",
   birthdate_future: "Veuillez entrer une date de naissance qui n'est pas dans le future.",
 	quantity: "Veuillez entrer un nombre valide.",
-	location: "Veuillez choisir une ville.",
-  location_incoherence: "Veuillez séléctionner un nombre de ville correct avec votre nombre de tournois. Vous pouvez avoir participer à plusieurs tournois dans la même ville mais pas avoir plus de ville que de nombre de tournois",
-  location_incoherence_0: "Vous n'avez effectué aucun tournois sélection impossible, voir ci-dessus votre réponse précédente",
+  location_incoherence_more : "Vous n'avez pas séléctionner de ville où vous avez participé",
+  location_incoherence_neg : "Sélection impossible le nombre de ville de la question au dessus est incorrect pour votre réponse actuelle. Vous devez avoir au minimun 1 tournois par ville choisis en décompte.",
 	cgu: "Veuillez accepter les conditions d'utilisations.",
 };
 
@@ -120,19 +119,17 @@ function validate()
   }
 
 
-  if(!check_min_checkbox(localisation,quantity_tournament.value)){
+  if(!checkbox_invalid_by_number_neg(localisation,quantity_tournament.value))
+  {
     error++;
-    show_error(localisation[0].parentElement, errorMessages.location);
+    show_error(localisation[0].parentElement, errorMessages.location_incoherence_neg);
   }
-  if(!check_min_checkbox_number(localisation,quantity_tournament.value)){
+  else if(!checkbox_invalid_by_number_more(localisation,quantity_tournament.value))
+  {
     error++;
-    show_error(localisation[0].parentElement, errorMessages.location_incoherence);
+    show_error(localisation[0].parentElement, errorMessages.location_incoherence_more);
   }
-  if(!check_min_checkbox_number_0(localisation,quantity_tournament.value)){
-    error++;
-    show_error(localisation[0].parentElement, errorMessages.location_incoherence_0);
-  }
-
+  
   
 
 
@@ -243,37 +240,12 @@ function check_number(number)
   return false;
 }
 
-// function to detect if at least one checkbox is checked
-function check_min_checkbox(n_checkbox, number_city)
-{
-  var ifchecked = false;
 
-  n_checkbox.forEach((checkbox) => checkbox.checked ? ifchecked = true : 0 );
 
-  if(parseInt(number_city) >= 0 && ifchecked)
-  {
-    return true
-  }
-  else if(!number_city && !ifchecked)
-  {
-    return true;
-  }
-  else if(parseInt(number_city) === 0 && !ifchecked)
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-// function to validate equal game tournament with city
-function check_min_checkbox_number(n_checkbox, number_city)
+function checkbox_invalid_by_number_neg(n_checkbox, number_city)
 {
   var ifchecked = false;
   var checkCompteur = 0;
-
-  n_checkbox.forEach((checkbox) => checkbox.checked ? add() : 0 );
 
   function add()
   {
@@ -281,24 +253,20 @@ function check_min_checkbox_number(n_checkbox, number_city)
     checkCompteur++
   }
 
-  if(number_city > 0 && ifchecked && !(checkCompteur > parseInt(number_city)))
-  {
-    return true
-  }
-  else if( (ifchecked && !number_city) || (!ifchecked && parseInt(number_city) > 0) || (checkCompteur > parseInt(number_city)) )
+  n_checkbox.forEach((checkbox) => checkbox.checked ? add() : 0 );
+
+  if( (ifchecked && !number_city) || (ifchecked && parseInt(number_city) < 0) || (ifchecked && checkCompteur > parseInt(number_city)) )
   {
     return false;
   }
 
   return true;
 }
-// function to validate equal game tournament with city with error 0 number
-function check_min_checkbox_number_0(n_checkbox, number_city)
+
+function checkbox_invalid_by_number_more(n_checkbox, number_city)
 {
   var ifchecked = false;
   var checkCompteur = 0;
-
-  n_checkbox.forEach((checkbox) => checkbox.checked ? add() : 0 );
 
   function add()
   {
@@ -306,11 +274,9 @@ function check_min_checkbox_number_0(n_checkbox, number_city)
     checkCompteur++
   }
 
-  if(number_city > 0 && ifchecked && !(checkCompteur > parseInt(number_city)))
-  {
-    return true
-  }
-  else if((ifchecked && parseInt(number_city) === 0))
+  n_checkbox.forEach((checkbox) => checkbox.checked ? add() : 0 );
+
+  if( parseInt(number_city) > 0 && !checkCompteur )
   {
     return false;
   }
